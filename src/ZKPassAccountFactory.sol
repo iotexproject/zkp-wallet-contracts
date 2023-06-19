@@ -27,11 +27,11 @@ contract ZKPassAccountFactory is Ownable {
         bytes32 _baseNode
     ) {
         baseName = _baseName;
+        baseNode = _baseNode;
         nameWrapper = _nameWrapper;
         reverseRegistrar = _reverseRegistrar;
         resolver = _resolver;
         accountImplementation = new ZKPassAccount(_entryPoint);
-        baseNode = _baseNode;
     }
 
     function _makeNode(bytes32 node, bytes32 labelhash) private pure returns (bytes32) {
@@ -55,7 +55,7 @@ contract ZKPassAccountFactory is Ownable {
             payable(
                 new ERC1967Proxy{salt: bytes32(0)}(
                     address(accountImplementation),
-                    abi.encodeCall(ZKPassAccount.initialize, node)
+                    abi.encodeCall(ZKPassAccount.initialize, (node, address(this)))
                 )
             )
         );
@@ -75,19 +75,16 @@ contract ZKPassAccountFactory is Ownable {
                 keccak256(
                     abi.encodePacked(
                         type(ERC1967Proxy).creationCode,
-                        abi.encode(address(accountImplementation), abi.encodeCall(ZKPassAccount.initialize, node))
+                        abi.encode(
+                            address(accountImplementation),
+                            abi.encodeCall(ZKPassAccount.initialize, (node, address(this)))
+                        )
                     )
                 )
             );
     }
 
-    function onERC1155Received(
-        address,
-        address,
-        uint256,
-        uint256,
-        bytes calldata
-    ) external pure returns (bytes4) {
+    function onERC1155Received(address, address, uint256, uint256, bytes calldata) external pure returns (bytes4) {
         return IERC1155Receiver.onERC1155Received.selector;
     }
 }

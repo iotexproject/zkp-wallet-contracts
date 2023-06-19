@@ -2,10 +2,7 @@
 pragma solidity ^0.8.13;
 
 interface IRegistrar {
-    function rentPrice(
-        string memory name,
-        uint256 duration
-    ) external view returns (uint256 base, uint256 premium);
+    function rentPrice(string memory name, uint256 duration) external view returns (uint256 base, uint256 premium);
 
     function makeCommitment(
         string memory name,

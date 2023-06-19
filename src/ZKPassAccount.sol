@@ -8,6 +8,8 @@ import "@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol
 
 contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initializable {
     IEntryPoint private immutable _entryPoint;
+    address public owner;
+    bytes32 public nameHash;
 
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
@@ -25,8 +27,10 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
         require(msg.sender == address(entryPoint()), "account: not EntryPoint");
     }
 
-    function initialize(bytes32 _nameHash) public virtual initializer {
-        // TODO
+    function initialize(bytes32 _nameHash, address _owner) public virtual initializer {
+        nameHash = _nameHash;
+        owner = _owner;
+        // TODO emit log
     }
 
     function execute(address dest, uint256 value, bytes calldata func) external onlyEntryPoint {

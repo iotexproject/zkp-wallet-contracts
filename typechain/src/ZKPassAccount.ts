@@ -76,10 +76,12 @@ export interface ZKPassAccountInterface extends utils.Interface {
     "executeBatch(address[],bytes[])": FunctionFragment;
     "getDeposit()": FunctionFragment;
     "getNonce()": FunctionFragment;
-    "initialize(bytes32)": FunctionFragment;
+    "initialize(bytes32,address)": FunctionFragment;
+    "nameHash()": FunctionFragment;
     "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
+    "owner()": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "tokensReceived(address,address,address,uint256,bytes,bytes)": FunctionFragment;
@@ -98,9 +100,11 @@ export interface ZKPassAccountInterface extends utils.Interface {
       | "getDeposit"
       | "getNonce"
       | "initialize"
+      | "nameHash"
       | "onERC1155BatchReceived"
       | "onERC1155Received"
       | "onERC721Received"
+      | "owner"
       | "proxiableUUID"
       | "supportsInterface"
       | "tokensReceived"
@@ -137,8 +141,9 @@ export interface ZKPassAccountInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "getNonce", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [PromiseOrValue<BytesLike>]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
+  encodeFunctionData(functionFragment: "nameHash", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "onERC1155BatchReceived",
     values: [
@@ -168,6 +173,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
       PromiseOrValue<BytesLike>
     ]
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "proxiableUUID",
     values?: undefined
@@ -218,6 +224,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "getDeposit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getNonce", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "nameHash", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "onERC1155BatchReceived",
     data: BytesLike
@@ -230,6 +237,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
     functionFragment: "onERC721Received",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "proxiableUUID",
     data: BytesLike
@@ -356,8 +364,11 @@ export interface ZKPassAccount extends BaseContract {
 
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
+      _owner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    nameHash(overrides?: CallOverrides): Promise<[string]>;
 
     onERC1155BatchReceived(
       arg0: PromiseOrValue<string>,
@@ -384,6 +395,8 @@ export interface ZKPassAccount extends BaseContract {
       arg3: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    owner(overrides?: CallOverrides): Promise<[string]>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
 
@@ -452,8 +465,11 @@ export interface ZKPassAccount extends BaseContract {
 
   initialize(
     _nameHash: PromiseOrValue<BytesLike>,
+    _owner: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
+
+  nameHash(overrides?: CallOverrides): Promise<string>;
 
   onERC1155BatchReceived(
     arg0: PromiseOrValue<string>,
@@ -480,6 +496,8 @@ export interface ZKPassAccount extends BaseContract {
     arg3: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  owner(overrides?: CallOverrides): Promise<string>;
 
   proxiableUUID(overrides?: CallOverrides): Promise<string>;
 
@@ -546,8 +564,11 @@ export interface ZKPassAccount extends BaseContract {
 
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
+      _owner: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    nameHash(overrides?: CallOverrides): Promise<string>;
 
     onERC1155BatchReceived(
       arg0: PromiseOrValue<string>,
@@ -574,6 +595,8 @@ export interface ZKPassAccount extends BaseContract {
       arg3: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    owner(overrides?: CallOverrides): Promise<string>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<string>;
 
@@ -671,8 +694,11 @@ export interface ZKPassAccount extends BaseContract {
 
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
+      _owner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    nameHash(overrides?: CallOverrides): Promise<BigNumber>;
 
     onERC1155BatchReceived(
       arg0: PromiseOrValue<string>,
@@ -699,6 +725,8 @@ export interface ZKPassAccount extends BaseContract {
       arg3: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -768,8 +796,11 @@ export interface ZKPassAccount extends BaseContract {
 
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
+      _owner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
+
+    nameHash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     onERC1155BatchReceived(
       arg0: PromiseOrValue<string>,
@@ -796,6 +827,8 @@ export interface ZKPassAccount extends BaseContract {
       arg3: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

@@ -13,8 +13,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // @ts-ignore
     const addresses = config[network.name]
 
-    const baseName = '.iopay.io'
-    const baseNode = namehash('iopay.io')
+    const baseName = '.test002.io'
+    const baseNode = namehash('test002.io')
 
     await deploy('ZKPassAccountFactory', {
         from: deployer,
