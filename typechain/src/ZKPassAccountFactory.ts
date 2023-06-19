@@ -4,6 +4,7 @@
 import type {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
   ContractTransaction,
@@ -34,6 +35,7 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
     "createAccount(string)": FunctionFragment;
     "getAddress(string)": FunctionFragment;
     "nameWrapper()": FunctionFragment;
+    "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "resolver()": FunctionFragment;
@@ -49,6 +51,7 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
       | "createAccount"
       | "getAddress"
       | "nameWrapper"
+      | "onERC1155Received"
       | "owner"
       | "renounceOwnership"
       | "resolver"
@@ -73,6 +76,16 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "nameWrapper",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "onERC1155Received",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -102,6 +115,10 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "getAddress", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "nameWrapper",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "onERC1155Received",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -183,6 +200,15 @@ export interface ZKPassAccountFactory extends BaseContract {
 
     nameWrapper(overrides?: CallOverrides): Promise<[string]>;
 
+    onERC1155Received(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      arg2: PromiseOrValue<BigNumberish>,
+      arg3: PromiseOrValue<BigNumberish>,
+      arg4: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     renounceOwnership(
@@ -217,6 +243,15 @@ export interface ZKPassAccountFactory extends BaseContract {
 
   nameWrapper(overrides?: CallOverrides): Promise<string>;
 
+  onERC1155Received(
+    arg0: PromiseOrValue<string>,
+    arg1: PromiseOrValue<string>,
+    arg2: PromiseOrValue<BigNumberish>,
+    arg3: PromiseOrValue<BigNumberish>,
+    arg4: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   renounceOwnership(
@@ -250,6 +285,15 @@ export interface ZKPassAccountFactory extends BaseContract {
     ): Promise<string>;
 
     nameWrapper(overrides?: CallOverrides): Promise<string>;
+
+    onERC1155Received(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      arg2: PromiseOrValue<BigNumberish>,
+      arg3: PromiseOrValue<BigNumberish>,
+      arg4: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -295,6 +339,15 @@ export interface ZKPassAccountFactory extends BaseContract {
 
     nameWrapper(overrides?: CallOverrides): Promise<BigNumber>;
 
+    onERC1155Received(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      arg2: PromiseOrValue<BigNumberish>,
+      arg3: PromiseOrValue<BigNumberish>,
+      arg4: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     renounceOwnership(
@@ -331,6 +384,15 @@ export interface ZKPassAccountFactory extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     nameWrapper(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    onERC1155Received(
+      arg0: PromiseOrValue<string>,
+      arg1: PromiseOrValue<string>,
+      arg2: PromiseOrValue<BigNumberish>,
+      arg3: PromiseOrValue<BigNumberish>,
+      arg4: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

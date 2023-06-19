@@ -32,6 +32,11 @@ const config: HardhatUserConfig = {
         hardhat: {
             saveDeployments: false,
         },
+        dev: {
+            url: "http://localhost:8545",
+            chainId: 4690,
+            accounts: real_accounts,
+        },
         testnet: {
             url: "https://babel-api.testnet.iotex.io",
             chainId: 4690,

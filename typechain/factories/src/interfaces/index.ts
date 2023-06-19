@@ -3,5 +3,6 @@
 /* eslint-disable */
 export { INS__factory } from "./INS__factory";
 export { INameWrapper__factory } from "./INameWrapper__factory";
+export { IRegistrar__factory } from "./IRegistrar__factory";
 export { IResolver__factory } from "./IResolver__factory";
 export { IReverseRegistrar__factory } from "./IReverseRegistrar__factory";
