@@ -76,18 +76,20 @@ export interface ZKPassAccountInterface extends utils.Interface {
     "executeBatch(address[],bytes[])": FunctionFragment;
     "getDeposit()": FunctionFragment;
     "getNonce()": FunctionFragment;
-    "initialize(bytes32,address)": FunctionFragment;
+    "initialize(bytes32,uint256)": FunctionFragment;
     "nameHash()": FunctionFragment;
     "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
-    "owner()": FunctionFragment;
+    "passHash()": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "tokensReceived(address,address,address,uint256,bytes,bytes)": FunctionFragment;
     "upgradeTo(address)": FunctionFragment;
     "upgradeToAndCall(address,bytes)": FunctionFragment;
     "validateUserOp((address,uint256,bytes,bytes,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes32,uint256)": FunctionFragment;
+    "verifier()": FunctionFragment;
+    "verifyProof(bytes,uint256)": FunctionFragment;
     "withdrawDepositTo(address,uint256)": FunctionFragment;
   };
 
@@ -104,13 +106,15 @@ export interface ZKPassAccountInterface extends utils.Interface {
       | "onERC1155BatchReceived"
       | "onERC1155Received"
       | "onERC721Received"
-      | "owner"
+      | "passHash"
       | "proxiableUUID"
       | "supportsInterface"
       | "tokensReceived"
       | "upgradeTo"
       | "upgradeToAndCall"
       | "validateUserOp"
+      | "verifier"
+      | "verifyProof"
       | "withdrawDepositTo"
   ): FunctionFragment;
 
@@ -141,7 +145,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "getNonce", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(functionFragment: "nameHash", values?: undefined): string;
   encodeFunctionData(
@@ -173,7 +177,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
       PromiseOrValue<BytesLike>
     ]
   ): string;
-  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "passHash", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "proxiableUUID",
     values?: undefined
@@ -209,6 +213,11 @@ export interface ZKPassAccountInterface extends utils.Interface {
       PromiseOrValue<BigNumberish>
     ]
   ): string;
+  encodeFunctionData(functionFragment: "verifier", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "verifyProof",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
+  ): string;
   encodeFunctionData(
     functionFragment: "withdrawDepositTo",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
@@ -237,7 +246,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
     functionFragment: "onERC721Received",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "passHash", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "proxiableUUID",
     data: BytesLike
@@ -259,6 +268,11 @@ export interface ZKPassAccountInterface extends utils.Interface {
     functionFragment: "validateUserOp",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "verifier", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "verifyProof",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "withdrawDepositTo",
     data: BytesLike
@@ -269,12 +283,14 @@ export interface ZKPassAccountInterface extends utils.Interface {
     "BeaconUpgraded(address)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "Upgraded(address)": EventFragment;
+    "ZKPassAccountInitialized(address,bytes32,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ZKPassAccountInitialized"): EventFragment;
 }
 
 export interface AdminChangedEventObject {
@@ -311,6 +327,19 @@ export interface UpgradedEventObject {
 export type UpgradedEvent = TypedEvent<[string], UpgradedEventObject>;
 
 export type UpgradedEventFilter = TypedEventFilter<UpgradedEvent>;
+
+export interface ZKPassAccountInitializedEventObject {
+  entryPoint: string;
+  namaHash: string;
+  passHash: BigNumber;
+}
+export type ZKPassAccountInitializedEvent = TypedEvent<
+  [string, string, BigNumber],
+  ZKPassAccountInitializedEventObject
+>;
+
+export type ZKPassAccountInitializedEventFilter =
+  TypedEventFilter<ZKPassAccountInitializedEvent>;
 
 export interface ZKPassAccount extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -364,7 +393,7 @@ export interface ZKPassAccount extends BaseContract {
 
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
-      _owner: PromiseOrValue<string>,
+      _passHash: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -396,7 +425,7 @@ export interface ZKPassAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string]>;
 
-    owner(overrides?: CallOverrides): Promise<[string]>;
+    passHash(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
 
@@ -433,6 +462,14 @@ export interface ZKPassAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    verifier(overrides?: CallOverrides): Promise<[string]>;
+
+    verifyProof(
+      _proof: PromiseOrValue<BytesLike>,
+      _opHash: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
@@ -465,7 +502,7 @@ export interface ZKPassAccount extends BaseContract {
 
   initialize(
     _nameHash: PromiseOrValue<BytesLike>,
-    _owner: PromiseOrValue<string>,
+    _passHash: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -497,7 +534,7 @@ export interface ZKPassAccount extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string>;
 
-  owner(overrides?: CallOverrides): Promise<string>;
+  passHash(overrides?: CallOverrides): Promise<BigNumber>;
 
   proxiableUUID(overrides?: CallOverrides): Promise<string>;
 
@@ -534,6 +571,14 @@ export interface ZKPassAccount extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  verifier(overrides?: CallOverrides): Promise<string>;
+
+  verifyProof(
+    _proof: PromiseOrValue<BytesLike>,
+    _opHash: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   withdrawDepositTo(
     withdrawAddress: PromiseOrValue<string>,
     amount: PromiseOrValue<BigNumberish>,
@@ -564,7 +609,7 @@ export interface ZKPassAccount extends BaseContract {
 
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
-      _owner: PromiseOrValue<string>,
+      _passHash: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -596,7 +641,7 @@ export interface ZKPassAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    owner(overrides?: CallOverrides): Promise<string>;
+    passHash(overrides?: CallOverrides): Promise<BigNumber>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<string>;
 
@@ -633,6 +678,14 @@ export interface ZKPassAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    verifier(overrides?: CallOverrides): Promise<string>;
+
+    verifyProof(
+      _proof: PromiseOrValue<BytesLike>,
+      _opHash: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
@@ -666,6 +719,17 @@ export interface ZKPassAccount extends BaseContract {
     Upgraded(
       implementation?: PromiseOrValue<string> | null
     ): UpgradedEventFilter;
+
+    "ZKPassAccountInitialized(address,bytes32,uint256)"(
+      entryPoint?: PromiseOrValue<string> | null,
+      namaHash?: PromiseOrValue<BytesLike> | null,
+      passHash?: PromiseOrValue<BigNumberish> | null
+    ): ZKPassAccountInitializedEventFilter;
+    ZKPassAccountInitialized(
+      entryPoint?: PromiseOrValue<string> | null,
+      namaHash?: PromiseOrValue<BytesLike> | null,
+      passHash?: PromiseOrValue<BigNumberish> | null
+    ): ZKPassAccountInitializedEventFilter;
   };
 
   estimateGas: {
@@ -694,7 +758,7 @@ export interface ZKPassAccount extends BaseContract {
 
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
-      _owner: PromiseOrValue<string>,
+      _passHash: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -726,7 +790,7 @@ export interface ZKPassAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
+    passHash(overrides?: CallOverrides): Promise<BigNumber>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -763,6 +827,14 @@ export interface ZKPassAccount extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    verifier(overrides?: CallOverrides): Promise<BigNumber>;
+
+    verifyProof(
+      _proof: PromiseOrValue<BytesLike>,
+      _opHash: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     withdrawDepositTo(
       withdrawAddress: PromiseOrValue<string>,
       amount: PromiseOrValue<BigNumberish>,
@@ -796,7 +868,7 @@ export interface ZKPassAccount extends BaseContract {
 
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
-      _owner: PromiseOrValue<string>,
+      _passHash: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -828,7 +900,7 @@ export interface ZKPassAccount extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    passHash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -863,6 +935,14 @@ export interface ZKPassAccount extends BaseContract {
       userOpHash: PromiseOrValue<BytesLike>,
       missingAccountFunds: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    verifier(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    verifyProof(
+      _proof: PromiseOrValue<BytesLike>,
+      _opHash: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     withdrawDepositTo(

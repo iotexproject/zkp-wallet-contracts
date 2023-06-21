@@ -2,5 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as interfaces from "./interfaces";
+export * as verifierSol from "./verifier.sol";
 export { ZKPassAccount__factory } from "./ZKPassAccount__factory";
 export { ZKPassAccountFactory__factory } from "./ZKPassAccountFactory__factory";

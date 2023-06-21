@@ -3,5 +3,7 @@
 /* eslint-disable */
 import type * as interfaces from "./interfaces";
 export type { interfaces };
+import type * as verifierSol from "./verifier.sol";
+export type { verifierSol };
 export type { ZKPassAccount } from "./ZKPassAccount";
 export type { ZKPassAccountFactory } from "./ZKPassAccountFactory";

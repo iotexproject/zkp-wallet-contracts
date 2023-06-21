@@ -29,11 +29,12 @@ import type {
 
 export interface ZKPassAccountFactoryInterface extends utils.Interface {
   functions: {
+    "FUSES()": FunctionFragment;
     "accountImplementation()": FunctionFragment;
     "baseName()": FunctionFragment;
     "baseNode()": FunctionFragment;
-    "createAccount(string)": FunctionFragment;
-    "getAddress(string)": FunctionFragment;
+    "createAccount(string,uint256)": FunctionFragment;
+    "getAddress(string,uint256)": FunctionFragment;
     "nameWrapper()": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
     "owner()": FunctionFragment;
@@ -45,6 +46,7 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "FUSES"
       | "accountImplementation"
       | "baseName"
       | "baseNode"
@@ -59,6 +61,7 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
       | "transferOwnership"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "FUSES", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "accountImplementation",
     values?: undefined
@@ -67,11 +70,11 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "baseNode", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "createAccount",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "getAddress",
-    values: [PromiseOrValue<string>]
+    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "nameWrapper",
@@ -102,6 +105,7 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
 
+  decodeFunctionResult(functionFragment: "FUSES", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "accountImplementation",
     data: BytesLike
@@ -182,6 +186,8 @@ export interface ZKPassAccountFactory extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    FUSES(overrides?: CallOverrides): Promise<[number]>;
+
     accountImplementation(overrides?: CallOverrides): Promise<[string]>;
 
     baseName(overrides?: CallOverrides): Promise<[string]>;
@@ -190,11 +196,13 @@ export interface ZKPassAccountFactory extends BaseContract {
 
     createAccount(
       label: PromiseOrValue<string>,
+      passHash: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     getAddress(
       label: PromiseOrValue<string>,
+      passHash: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
@@ -225,6 +233,8 @@ export interface ZKPassAccountFactory extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  FUSES(overrides?: CallOverrides): Promise<number>;
+
   accountImplementation(overrides?: CallOverrides): Promise<string>;
 
   baseName(overrides?: CallOverrides): Promise<string>;
@@ -233,11 +243,13 @@ export interface ZKPassAccountFactory extends BaseContract {
 
   createAccount(
     label: PromiseOrValue<string>,
+    passHash: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   getAddress(
     label: PromiseOrValue<string>,
+    passHash: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
 
@@ -268,6 +280,8 @@ export interface ZKPassAccountFactory extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    FUSES(overrides?: CallOverrides): Promise<number>;
+
     accountImplementation(overrides?: CallOverrides): Promise<string>;
 
     baseName(overrides?: CallOverrides): Promise<string>;
@@ -276,11 +290,13 @@ export interface ZKPassAccountFactory extends BaseContract {
 
     createAccount(
       label: PromiseOrValue<string>,
+      passHash: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
 
     getAddress(
       label: PromiseOrValue<string>,
+      passHash: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -321,6 +337,8 @@ export interface ZKPassAccountFactory extends BaseContract {
   };
 
   estimateGas: {
+    FUSES(overrides?: CallOverrides): Promise<BigNumber>;
+
     accountImplementation(overrides?: CallOverrides): Promise<BigNumber>;
 
     baseName(overrides?: CallOverrides): Promise<BigNumber>;
@@ -329,11 +347,13 @@ export interface ZKPassAccountFactory extends BaseContract {
 
     createAccount(
       label: PromiseOrValue<string>,
+      passHash: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     getAddress(
       label: PromiseOrValue<string>,
+      passHash: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -365,6 +385,8 @@ export interface ZKPassAccountFactory extends BaseContract {
   };
 
   populateTransaction: {
+    FUSES(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     accountImplementation(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -375,11 +397,13 @@ export interface ZKPassAccountFactory extends BaseContract {
 
     createAccount(
       label: PromiseOrValue<string>,
+      passHash: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     getAddress(
       label: PromiseOrValue<string>,
+      passHash: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

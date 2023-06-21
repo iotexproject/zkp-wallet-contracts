@@ -9,12 +9,9 @@ import "@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol
 import "./interfaces/IVerifier.sol";
 
 contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initializable {
-    event ZKPassAccountInitialized(
-        IEntryPoint indexed entryPoint,
-        bytes32 indexed namaHash,
-        uint256 indexed passHash
-    );
-    uint256 immutable SNARK_SCALAR_FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+    event ZKPassAccountInitialized(IEntryPoint indexed entryPoint, bytes32 indexed namaHash, uint256 indexed passHash);
+    uint256 immutable SNARK_SCALAR_FIELD =
+        21888242871839275222246405745257275088548364400416034343698204186575808495617;
 
     IEntryPoint private immutable _entryPoint;
     IVerifier private immutable _verifier;
@@ -94,7 +91,7 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        if(!verifyProof(userOp.signature, uint256(userOpHash))) {
+        if (!verifyProof(userOp.signature, uint256(userOpHash))) {
             return SIG_VALIDATION_FAILED;
         }
         return 0;
@@ -106,25 +103,24 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
         uint256[2] memory c;
         {
             (
-                uint256 proof0,uint256 proof1,uint256 proof2,uint256 proof3,
-                uint256 proof4,uint256 proof5,uint256 proof6,uint256 proof7
-            ) = abi.decode(
-                _proof[:256], (uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
-            );
+                uint256 proof0,
+                uint256 proof1,
+                uint256 proof2,
+                uint256 proof3,
+                uint256 proof4,
+                uint256 proof5,
+                uint256 proof6,
+                uint256 proof7
+            ) = abi.decode(_proof[:256], (uint256, uint256, uint256, uint256, uint256, uint256, uint256, uint256));
             a = [proof0, proof1];
             b = [[proof2, proof3], [proof4, proof5]];
             c = [proof6, proof7];
         }
         uint256 opProof = uint256(bytes32(_proof[256:]));
-        
+
         _opHash %= SNARK_SCALAR_FIELD;
-        
-        uint256[4] memory input = [
-            passHash,
-            opProof,
-            getNonce(),
-            _opHash
-        ];
+
+        uint256[4] memory input = [passHash, opProof, getNonce(), _opHash];
         return _verifier.verifyProof(a, b, c, input);
     }
 }

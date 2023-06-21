@@ -23,6 +23,7 @@ contract ZKPassAccountFactory is Ownable {
 
     constructor(
         IEntryPoint _entryPoint,
+        IVerifier _verifier,
         INameWrapper _nameWrapper,
         IResolver _resolver,
         IReverseRegistrar _reverseRegistrar,
@@ -34,15 +35,15 @@ contract ZKPassAccountFactory is Ownable {
         nameWrapper = _nameWrapper;
         reverseRegistrar = _reverseRegistrar;
         resolver = _resolver;
-        accountImplementation = new ZKPassAccount(_entryPoint);
+        accountImplementation = new ZKPassAccount(_entryPoint, _verifier);
     }
 
     function _makeNode(bytes32 node, bytes32 labelhash) private pure returns (bytes32) {
         return keccak256(abi.encodePacked(node, labelhash));
     }
 
-    function createAccount(string memory label) public returns (ZKPassAccount ret) {
-        address addr = getAddress(label);
+    function createAccount(string memory label, uint256 passHash) public returns (ZKPassAccount ret) {
+        address addr = getAddress(label, passHash);
 
         uint256 codeSize = addr.code.length;
         if (codeSize > 0) {
@@ -58,7 +59,7 @@ contract ZKPassAccountFactory is Ownable {
             payable(
                 new ERC1967Proxy{salt: bytes32(0)}(
                     address(accountImplementation),
-                    abi.encodeCall(ZKPassAccount.initialize, (node, address(this)))
+                    abi.encodeCall(ZKPassAccount.initialize, (node, passHash))
                 )
             )
         );
@@ -69,7 +70,7 @@ contract ZKPassAccountFactory is Ownable {
         nameWrapper.setSubnodeOwner(baseNode, label, address(ret), FUSES, 9999999999);
     }
 
-    function getAddress(string memory label) public view returns (address) {
+    function getAddress(string memory label, uint256 passHash) public view returns (address) {
         bytes32 labelhash = keccak256(bytes(label));
         bytes32 node = _makeNode(baseNode, labelhash);
 
@@ -81,7 +82,7 @@ contract ZKPassAccountFactory is Ownable {
                         type(ERC1967Proxy).creationCode,
                         abi.encode(
                             address(accountImplementation),
-                            abi.encodeCall(ZKPassAccount.initialize, (node, address(this)))
+                            abi.encodeCall(ZKPassAccount.initialize, (node, passHash))
                         )
                     )
                 )
