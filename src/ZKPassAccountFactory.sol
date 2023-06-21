@@ -11,6 +11,9 @@ import "./interfaces/IReverseRegistrar.sol";
 import "./ZKPassAccount.sol";
 
 contract ZKPassAccountFactory is Ownable {
+    uint32 public constant FUSES =
+        CANNOT_UNWRAP | CANNOT_BURN_FUSES | CANNOT_TRANSFER | CANNOT_SET_RESOLVER | CANNOT_SET_TTL;
+
     INameWrapper public immutable nameWrapper;
     IResolver public immutable resolver;
     IReverseRegistrar public immutable reverseRegistrar;
@@ -59,10 +62,11 @@ contract ZKPassAccountFactory is Ownable {
                 )
             )
         );
-        nameWrapper.setSubnodeRecord(baseNode, label, address(this), address(resolver), 0, 0, 9999999999);
+
+        nameWrapper.setSubnodeRecord(baseNode, label, address(this), address(resolver), 0, FUSES, 9999999999);
         resolver.setAddr(node, address(ret));
         reverseRegistrar.setNameForAddr(address(ret), address(ret), address(resolver), string.concat(label, baseName));
-        nameWrapper.setSubnodeOwner(baseNode, label, address(ret), 0, 9999999999);
+        nameWrapper.setSubnodeOwner(baseNode, label, address(ret), FUSES, 9999999999);
     }
 
     function getAddress(string memory label) public view returns (address) {

@@ -1,5 +1,4 @@
-import { ethers, network } from 'hardhat'
-import { namehash } from 'ethers/lib/utils'
+import { ethers } from 'hardhat'
 
 import { ZKPassAccountFactory } from "../typechain"
 
