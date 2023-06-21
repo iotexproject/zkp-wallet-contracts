@@ -6,10 +6,20 @@ import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "@account-abstraction/contracts/core/BaseAccount.sol";
 import "@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol";
 
+import "./interfaces/IVerifier.sol";
+
 contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initializable {
+    event ZKPassAccountInitialized(
+        IEntryPoint indexed entryPoint,
+        bytes32 indexed namaHash,
+        uint256 indexed passHash
+    );
+    uint256 immutable SNARK_SCALAR_FIELD = 21888242871839275222246405745257275088548364400416034343698204186575808495617;
+
     IEntryPoint private immutable _entryPoint;
-    address public owner;
+    IVerifier private immutable _verifier;
     bytes32 public nameHash;
+    uint256 public passHash;
 
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
@@ -19,18 +29,19 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
         _;
     }
 
-    constructor(IEntryPoint anEntryPoint) {
+    constructor(IEntryPoint anEntryPoint, IVerifier aVerifier) {
         _entryPoint = anEntryPoint;
+        _verifier = aVerifier;
     }
 
     function _onlyEntryPoint() internal view {
         require(msg.sender == address(entryPoint()), "account: not EntryPoint");
     }
 
-    function initialize(bytes32 _nameHash, address _owner) public virtual initializer {
+    function initialize(bytes32 _nameHash, uint256 _passHash) public virtual initializer {
         nameHash = _nameHash;
-        owner = _owner;
-        // TODO emit log
+        passHash = _passHash;
+        emit ZKPassAccountInitialized(_entryPoint, _nameHash, _passHash);
     }
 
     function execute(address dest, uint256 value, bytes calldata func) external onlyEntryPoint {
@@ -63,23 +74,57 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
     }
 
     function withdrawDepositTo(address payable withdrawAddress, uint256 amount) public {
-        // TODO verify
+        require(address(this) == msg.sender, "only owner");
         entryPoint().withdrawTo(withdrawAddress, amount);
     }
 
     function _authorizeUpgrade(address /*newImplementation*/) internal virtual override {
-        _onlyEntryPoint();
+        require(address(this) == msg.sender, "only owner");
     }
 
     function entryPoint() public view virtual override returns (IEntryPoint) {
         return _entryPoint;
     }
 
+    function verifier() public view returns (IVerifier) {
+        return _verifier;
+    }
+
     function _validateSignature(
         UserOperation calldata userOp,
         bytes32 userOpHash
     ) internal virtual override returns (uint256 validationData) {
-        // TODO
+        if(!verifyProof(userOp.signature, uint256(userOpHash))) {
+            return SIG_VALIDATION_FAILED;
+        }
         return 0;
+    }
+
+    function verifyProof(bytes calldata _proof, uint256 _opHash) public view returns (bool) {
+        uint256[2] memory a;
+        uint256[2][2] memory b;
+        uint256[2] memory c;
+        {
+            (
+                uint256 proof0,uint256 proof1,uint256 proof2,uint256 proof3,
+                uint256 proof4,uint256 proof5,uint256 proof6,uint256 proof7
+            ) = abi.decode(
+                _proof[:256], (uint256,uint256,uint256,uint256,uint256,uint256,uint256,uint256)
+            );
+            a = [proof0, proof1];
+            b = [[proof2, proof3], [proof4, proof5]];
+            c = [proof6, proof7];
+        }
+        uint256 opProof = uint256(bytes32(_proof[256:]));
+        
+        _opHash %= SNARK_SCALAR_FIELD;
+        
+        uint256[4] memory input = [
+            passHash,
+            opProof,
+            getNonce(),
+            _opHash
+        ];
+        return _verifier.verifyProof(a, b, c, input);
     }
 }
