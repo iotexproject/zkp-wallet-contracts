@@ -76,11 +76,12 @@ export interface ZKPassAccountInterface extends utils.Interface {
     "executeBatch(address[],bytes[])": FunctionFragment;
     "getDeposit()": FunctionFragment;
     "getNonce()": FunctionFragment;
-    "initialize(bytes32,uint256)": FunctionFragment;
+    "initialize(bytes32,uint256,address)": FunctionFragment;
     "nameHash()": FunctionFragment;
     "onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
+    "owner()": FunctionFragment;
     "passHash()": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
@@ -106,6 +107,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
       | "onERC1155BatchReceived"
       | "onERC1155Received"
       | "onERC721Received"
+      | "owner"
       | "passHash"
       | "proxiableUUID"
       | "supportsInterface"
@@ -145,7 +147,11 @@ export interface ZKPassAccountInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "getNonce", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<string>
+    ]
   ): string;
   encodeFunctionData(functionFragment: "nameHash", values?: undefined): string;
   encodeFunctionData(
@@ -177,6 +183,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
       PromiseOrValue<BytesLike>
     ]
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "passHash", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "proxiableUUID",
@@ -246,6 +253,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
     functionFragment: "onERC721Received",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "passHash", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "proxiableUUID",
@@ -394,6 +402,7 @@ export interface ZKPassAccount extends BaseContract {
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
       _passHash: PromiseOrValue<BigNumberish>,
+      _owner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -424,6 +433,8 @@ export interface ZKPassAccount extends BaseContract {
       arg3: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    owner(overrides?: CallOverrides): Promise<[string]>;
 
     passHash(overrides?: CallOverrides): Promise<[BigNumber]>;
 
@@ -503,6 +514,7 @@ export interface ZKPassAccount extends BaseContract {
   initialize(
     _nameHash: PromiseOrValue<BytesLike>,
     _passHash: PromiseOrValue<BigNumberish>,
+    _owner: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -533,6 +545,8 @@ export interface ZKPassAccount extends BaseContract {
     arg3: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
+
+  owner(overrides?: CallOverrides): Promise<string>;
 
   passHash(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -610,6 +624,7 @@ export interface ZKPassAccount extends BaseContract {
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
       _passHash: PromiseOrValue<BigNumberish>,
+      _owner: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -640,6 +655,8 @@ export interface ZKPassAccount extends BaseContract {
       arg3: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    owner(overrides?: CallOverrides): Promise<string>;
 
     passHash(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -759,6 +776,7 @@ export interface ZKPassAccount extends BaseContract {
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
       _passHash: PromiseOrValue<BigNumberish>,
+      _owner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -789,6 +807,8 @@ export interface ZKPassAccount extends BaseContract {
       arg3: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     passHash(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -869,6 +889,7 @@ export interface ZKPassAccount extends BaseContract {
     initialize(
       _nameHash: PromiseOrValue<BytesLike>,
       _passHash: PromiseOrValue<BigNumberish>,
+      _owner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -899,6 +920,8 @@ export interface ZKPassAccount extends BaseContract {
       arg3: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     passHash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

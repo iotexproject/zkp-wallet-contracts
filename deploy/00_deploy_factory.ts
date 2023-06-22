@@ -16,10 +16,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const baseName = '.test002.io'
     const baseNode = namehash('test002.io')
 
+    const verifier = await deploy('Verifier', {
+        from: deployer,
+        args: [],
+        log: true
+    })
+
     await deploy('ZKPassAccountFactory', {
         from: deployer,
         args: [
             addresses.entrypoint,
+            verifier.address,
             addresses.nameWrapper,
             addresses.resolver,
             addresses.reverseRegistrar,

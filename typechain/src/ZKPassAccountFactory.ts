@@ -29,7 +29,6 @@ import type {
 
 export interface ZKPassAccountFactoryInterface extends utils.Interface {
   functions: {
-    "FUSES()": FunctionFragment;
     "accountImplementation()": FunctionFragment;
     "baseName()": FunctionFragment;
     "baseNode()": FunctionFragment;
@@ -46,7 +45,6 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "FUSES"
       | "accountImplementation"
       | "baseName"
       | "baseNode"
@@ -61,7 +59,6 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
       | "transferOwnership"
   ): FunctionFragment;
 
-  encodeFunctionData(functionFragment: "FUSES", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "accountImplementation",
     values?: undefined
@@ -105,7 +102,6 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
 
-  decodeFunctionResult(functionFragment: "FUSES", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "accountImplementation",
     data: BytesLike
@@ -186,8 +182,6 @@ export interface ZKPassAccountFactory extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    FUSES(overrides?: CallOverrides): Promise<[number]>;
-
     accountImplementation(overrides?: CallOverrides): Promise<[string]>;
 
     baseName(overrides?: CallOverrides): Promise<[string]>;
@@ -232,8 +226,6 @@ export interface ZKPassAccountFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
-
-  FUSES(overrides?: CallOverrides): Promise<number>;
 
   accountImplementation(overrides?: CallOverrides): Promise<string>;
 
@@ -280,8 +272,6 @@ export interface ZKPassAccountFactory extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    FUSES(overrides?: CallOverrides): Promise<number>;
-
     accountImplementation(overrides?: CallOverrides): Promise<string>;
 
     baseName(overrides?: CallOverrides): Promise<string>;
@@ -337,8 +327,6 @@ export interface ZKPassAccountFactory extends BaseContract {
   };
 
   estimateGas: {
-    FUSES(overrides?: CallOverrides): Promise<BigNumber>;
-
     accountImplementation(overrides?: CallOverrides): Promise<BigNumber>;
 
     baseName(overrides?: CallOverrides): Promise<BigNumber>;
@@ -385,8 +373,6 @@ export interface ZKPassAccountFactory extends BaseContract {
   };
 
   populateTransaction: {
-    FUSES(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
     accountImplementation(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

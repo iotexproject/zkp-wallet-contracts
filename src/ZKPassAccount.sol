@@ -15,6 +15,9 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
 
     IEntryPoint private immutable _entryPoint;
     IVerifier private immutable _verifier;
+
+    // owner only for register INS name
+    address public owner;
     bytes32 public nameHash;
     uint256 public passHash;
 
@@ -35,9 +38,10 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
         require(msg.sender == address(entryPoint()), "account: not EntryPoint");
     }
 
-    function initialize(bytes32 _nameHash, uint256 _passHash) public virtual initializer {
+    function initialize(bytes32 _nameHash, uint256 _passHash, address _owner) public virtual initializer {
         nameHash = _nameHash;
         passHash = _passHash;
+        owner = _owner;
         emit ZKPassAccountInitialized(_entryPoint, _nameHash, _passHash);
     }
 
