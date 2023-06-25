@@ -3,18 +3,19 @@ import { hexConcat, hexlify, keccak256, namehash, resolveProperties, toUtf8Bytes
 
 import { ZKPassAccountFactory } from "../typechain"
 import { EntryPoint } from "@account-abstraction/contracts"
-import { deepHexlify, fillUserOp, signOp } from "./utils"
+import { fillUserOp, signOp } from "./utils"
+import config from './config'
 import { ZKPSigner } from "./signer"
-import { JsonRpcProvider } from "@ethersproject/providers"
 import { prove } from "./prover"
 
 async function main() {
     // @ts-ignore
     const addresses = config[network.name]
 
-
     const factory = (await ethers.getContract("ZKPassAccountFactory")) as ZKPassAccountFactory
     const entryPoint = (await ethers.getContractAt("EntryPoint", addresses.entrypoint)) as EntryPoint
+    const bundler = new ethers.Wallet(process.env.BUNDLER!, ethers.provider)
+    console.log(`bundler address: ${bundler.address}`)
 
     const name = "test"
     const password = process.env.PASSWORD
@@ -27,10 +28,6 @@ async function main() {
         BigInt(0), // opHash
         passport
     )
-
-    const bundler = new ethers.Wallet(process.env.BUNDLER!, ethers.provider)
-    console.log(`bundler address: ${bundler.address}`)
-
     const account = await factory.getAddress(name, publicSignals[0])
 
     const initCode = hexConcat([
@@ -43,7 +40,15 @@ async function main() {
     }
 
     const fullCreateOp = await fillUserOp(createOp, entryPoint)
-    
+
+    const stake = await entryPoint.balanceOf(account)
+    if (stake.isZero()) {
+        console.log(`deposit gas for account ${account}`)
+        const tx = await entryPoint
+            .connect(bundler)
+            .depositTo(account, { value: ethers.utils.parseEther("10") })
+        await tx.wait()
+    }
 
     const chainId = (await ethers.provider.getNetwork()).chainId
     const signedOp = await signOp(

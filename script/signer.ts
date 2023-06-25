@@ -29,7 +29,7 @@ export class ZKPSigner implements AccountSigner {
         op %= this.SNARK_SCALAR_FIELD
 
         const passport = this.passport - this.nonce;
-        const {proof, _} = await prove(
+        const {proof, publicSignals} = await prove(
             this.nonce,
             op,
             passport
