@@ -1,6 +1,7 @@
 const addresses = {
     "dev": {
         entrypoint: '0x16653fF93F0e5fEF85CE46862562a4c58B05435E',
+        ins: "0x845d8ccb0D92174B33AC9A876B65c49Ca4676685",
         nameWrapper: '0x92f0926350268a0147E36c4Dfbc4c72Eb11696cF',
         resolver: '0x919f2508389c59fe6E896f80c2B70ff53877942B',
         registrar: '0xcFF9867F5ac4b64b613641265262db7dB07Da067',
@@ -8,6 +9,7 @@ const addresses = {
     },
     "testnet": {
         entrypoint: '0x16653fF93F0e5fEF85CE46862562a4c58B05435E',
+        ins: "0x845d8ccb0D92174B33AC9A876B65c49Ca4676685",
         nameWrapper: '0x92f0926350268a0147E36c4Dfbc4c72Eb11696cF',
         resolver: '0x919f2508389c59fe6E896f80c2B70ff53877942B',
         registrar: '0xcFF9867F5ac4b64b613641265262db7dB07Da067',

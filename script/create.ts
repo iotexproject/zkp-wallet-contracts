@@ -69,7 +69,7 @@ async function main() {
     console.log(`simulate op success`)
 
     const tx = await entryPoint.connect(bundler).handleOps([signedOp], bundler.address)
-    console.log(`create use paymaster tx: ${tx.hash}, account: ${account}`)
+    console.log(`create account tx: ${tx.hash}, account: ${account}`)
 }
 
 main()

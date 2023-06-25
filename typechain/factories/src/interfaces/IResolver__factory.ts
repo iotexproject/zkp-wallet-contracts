@@ -17,6 +17,25 @@ const _abi = [
         name: "node",
         type: "bytes32",
       },
+    ],
+    name: "addr",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "node",
+        type: "bytes32",
+      },
       {
         internalType: "address",
         name: "addr",

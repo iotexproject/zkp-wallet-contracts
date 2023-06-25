@@ -24,16 +24,22 @@ import type {
 
 export interface IResolverInterface extends utils.Interface {
   functions: {
+    "addr(bytes32)": FunctionFragment;
     "setAddr(bytes32,address)": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "setAddr"): FunctionFragment;
+  getFunction(nameOrSignatureOrTopic: "addr" | "setAddr"): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "addr",
+    values: [PromiseOrValue<BytesLike>]
+  ): string;
   encodeFunctionData(
     functionFragment: "setAddr",
     values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
   ): string;
 
+  decodeFunctionResult(functionFragment: "addr", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "setAddr", data: BytesLike): Result;
 
   events: {};
@@ -66,12 +72,22 @@ export interface IResolver extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    addr(
+      node: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
     setAddr(
       node: PromiseOrValue<BytesLike>,
       addr: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
+
+  addr(
+    node: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<string>;
 
   setAddr(
     node: PromiseOrValue<BytesLike>,
@@ -80,6 +96,11 @@ export interface IResolver extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    addr(
+      node: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     setAddr(
       node: PromiseOrValue<BytesLike>,
       addr: PromiseOrValue<string>,
@@ -90,6 +111,11 @@ export interface IResolver extends BaseContract {
   filters: {};
 
   estimateGas: {
+    addr(
+      node: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     setAddr(
       node: PromiseOrValue<BytesLike>,
       addr: PromiseOrValue<string>,
@@ -98,6 +124,11 @@ export interface IResolver extends BaseContract {
   };
 
   populateTransaction: {
+    addr(
+      node: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     setAddr(
       node: PromiseOrValue<BytesLike>,
       addr: PromiseOrValue<string>,

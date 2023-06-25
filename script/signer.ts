@@ -1,18 +1,19 @@
 import { defaultAbiCoder, hexConcat, hexlify, keccak256, toUtf8Bytes } from "ethers/lib/utils"
 import { AccountSigner } from "./utils"
 import { prove } from "./prover"
+import { BigNumber } from "ethers"
 
 export class ZKPSigner implements AccountSigner {
     private readonly SNARK_SCALAR_FIELD = BigInt("0x30644e72e131a029b85045b68181585d2833e84879b9709143e1f593f0000001")
     private passport: bigint
     private nonce?: bigint
 
-    constructor(nameHash:string, password: string, nonce?: number) {
+    constructor(nameHash:string, password: string, nonce?: number | BigNumber) {
         this.passport = BigInt(keccak256(
             hexConcat([nameHash, hexlify(toUtf8Bytes(password))])
         ))
         if (nonce != null) {
-            this.nonce = BigInt(0)
+            this.nonce = BigInt(nonce.toString())
         }
     }
 
