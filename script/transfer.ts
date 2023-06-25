@@ -60,7 +60,6 @@ async function main() {
         await tx.wait()
     }
     const nonce = await account.getNonce()
-    console.log(`nonce: ${nonce}`)
 
     const chainId = (await ethers.provider.getNetwork()).chainId
     const signedOp = await signOp(
