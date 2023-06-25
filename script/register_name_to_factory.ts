@@ -29,6 +29,7 @@ async function main() {
         secret,
         resolver.address,
         [
+            // @ts-ignore
             resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [
                 node,
                 owner,
@@ -53,6 +54,7 @@ async function main() {
         secret,
         resolver.address,
         [
+            // @ts-ignore
             resolver.interface.encodeFunctionData('setAddr(bytes32,address)', [
                 node,
                 owner,

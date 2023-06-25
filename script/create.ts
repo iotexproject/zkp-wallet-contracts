@@ -1,14 +1,24 @@
-import { ethers } from 'hardhat'
+import { ethers } from "hardhat"
+import { hexConcat, hexlify, keccak256, namehash, resolveProperties, toUtf8Bytes } from "ethers/lib/utils"
 
 import { ZKPassAccountFactory } from "../typechain"
-import { hexConcat, hexlify, keccak256, namehash, toUtf8Bytes } from 'ethers/lib/utils'
-import { prove } from './prover'
+import { EntryPoint } from "@account-abstraction/contracts"
+import { deepHexlify, fillUserOp, signOp } from "./utils"
+import { ZKPSigner } from "./signer"
+import { JsonRpcProvider } from "@ethersproject/providers"
+import { prove } from "./prover"
 
 async function main() {
+    // @ts-ignore
+    const addresses = config[network.name]
+
+
+    const factory = (await ethers.getContract("ZKPassAccountFactory")) as ZKPassAccountFactory
+    const entryPoint = (await ethers.getContractAt("EntryPoint", addresses.entrypoint)) as EntryPoint
+
     const name = "test"
     const password = process.env.PASSWORD
     const nameHash = namehash(name + ".test002.io")
-
     const passport = BigInt(keccak256(
         hexConcat([nameHash, hexlify(toUtf8Bytes(password!))])
     ))
@@ -18,9 +28,43 @@ async function main() {
         passport
     )
 
-    const factory = (await ethers.getContract('ZKPassAccountFactory')) as ZKPassAccountFactory
+    const bundler = new ethers.Wallet(process.env.BUNDLER!, ethers.provider)
+    console.log(`bundler address: ${bundler.address}`)
+
+    const account = await factory.getAddress(name, publicSignals[0])
+
+    const initCode = hexConcat([
+        factory.address,
+        factory.interface.encodeFunctionData("createAccount", [name, publicSignals[0]]),
+    ])
+    const createOp = {
+        sender: account,
+        initCode: initCode,
+    }
+
+    const fullCreateOp = await fillUserOp(createOp, entryPoint)
     
-    const tx = await factory.createAccount("test", publicSignals[0])
+
+    const chainId = (await ethers.provider.getNetwork()).chainId
+    const signedOp = await signOp(
+        fullCreateOp,
+        entryPoint.address,
+        chainId,
+        new ZKPSigner(nameHash, password!, 0)
+    )
+
+    const err = await entryPoint.callStatic.simulateValidation(signedOp).catch((e) => e)
+    if (err.errorName === "FailedOp") {
+        console.error(`simulate op error ${err.errorArgs.at(-1)}`)
+        return
+    } else if (err.errorName !== "ValidationResult") {
+        console.error(`unknow error ${err}`)
+        return
+    }
+    console.log(`simulate op success`)
+
+    const tx = await entryPoint.connect(bundler).handleOps([signedOp], bundler.address)
+    console.log(`create use paymaster tx: ${tx.hash}, account: ${account}`)
 }
 
 main()
