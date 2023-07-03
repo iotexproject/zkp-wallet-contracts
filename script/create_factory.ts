@@ -7,7 +7,7 @@ import { prove } from './prover'
 async function main() {
     const name = "test"
     const password = process.env.PASSWORD
-    const nameHash = namehash(name + ".test002.io")
+    const nameHash = namehash(name + ".zkwallet.io")
 
     const passport = BigInt(keccak256(
         hexConcat([nameHash, hexlify(toUtf8Bytes(password!))])

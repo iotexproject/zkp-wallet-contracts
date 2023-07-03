@@ -13,8 +13,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // @ts-ignore
     const addresses = config[network.name]
 
-    const baseName = '.test002.io'
-    const baseNode = namehash('test002.io')
+    const baseName = '.zkwallet.io'
+    const baseNode = namehash('zkwallet.io')
 
     const verifier = await deploy('Verifier', {
         from: deployer,
