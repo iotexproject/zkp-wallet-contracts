@@ -21,6 +21,7 @@ contract ZKPassAccountFactory is Ownable {
     constructor(
         IEntryPoint _entryPoint,
         IVerifier _verifier,
+        IEmailGuardian _emailGuardian,
         INameWrapper _nameWrapper,
         IResolver _resolver,
         IReverseRegistrar _reverseRegistrar,
@@ -32,7 +33,7 @@ contract ZKPassAccountFactory is Ownable {
         nameWrapper = _nameWrapper;
         reverseRegistrar = _reverseRegistrar;
         resolver = _resolver;
-        accountImplementation = new ZKPassAccount(_entryPoint, _verifier);
+        accountImplementation = new ZKPassAccount(_entryPoint, _verifier, _emailGuardian);
     }
 
     function _makeNode(bytes32 node, bytes32 labelhash) private pure returns (bytes32) {

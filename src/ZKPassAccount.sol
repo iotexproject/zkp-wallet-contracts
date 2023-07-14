@@ -6,20 +6,29 @@ import "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import "@account-abstraction/contracts/core/BaseAccount.sol";
 import "@account-abstraction/contracts/samples/callback/TokenCallbackHandler.sol";
 
+import "./interfaces/IEmailGuardian.sol";
 import "./interfaces/IVerifier.sol";
 
 contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initializable {
     event ZKPassAccountInitialized(IEntryPoint indexed entryPoint, bytes32 indexed namaHash, uint256 indexed passHash);
+    event EmailGuardianAdded(bytes32 indexed email);
+    event PasswordChanged(uint256 indexed passHash);
+    event AccountRecovered(uint256 indexed passHash);
+
     uint256 immutable SNARK_SCALAR_FIELD =
         21888242871839275222246405745257275088548364400416034343698204186575808495617;
 
     IEntryPoint private immutable _entryPoint;
     IVerifier private immutable _verifier;
+    IEmailGuardian private immutable _emailGuardian;
 
     // owner only for register INS name
     address public owner;
     bytes32 public nameHash;
     uint256 public passHash;
+
+    // email hash for recovery
+    bytes32 public email;
 
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
@@ -29,9 +38,10 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
         _;
     }
 
-    constructor(IEntryPoint anEntryPoint, IVerifier aVerifier) {
+    constructor(IEntryPoint anEntryPoint, IVerifier aVerifier, IEmailGuardian anEmailGuardian) {
         _entryPoint = anEntryPoint;
         _verifier = aVerifier;
+        _emailGuardian = anEmailGuardian;
     }
 
     function _onlyEntryPoint() internal view {
@@ -72,6 +82,12 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
     function addDeposit() public payable {
         (bool req, ) = address(entryPoint()).call{value: msg.value}("");
         require(req);
+    }
+
+    function changePassword(uint256 _passHash) external {
+        require(address(this) == msg.sender, "only owner");
+        passHash = _passHash;
+        emit PasswordChanged(_passHash);
     }
 
     function withdrawDepositTo(address payable withdrawAddress, uint256 amount) public {
@@ -126,5 +142,27 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
 
         uint256[4] memory input = [passHash, opProof, getNonce(), _opHash];
         return _verifier.verifyProof(a, b, c, input);
+    }
+
+    function addEmailGuardian(bytes32 _email) external {
+        require(address(this) == msg.sender, "only owner");
+        email = _email;
+        emit EmailGuardianAdded(_email);
+    }
+
+    function toBytes(uint256 x) public pure returns (bytes memory b) {
+        b = new bytes(32);
+        assembly {
+            mstore(add(b, 32), x)
+        }
+    }
+
+    function recovery(bytes32 _server, bytes calldata _data, bytes calldata _signature, uint256 _passHash) external {
+        require(
+            _emailGuardian.validateDKIM(_server, email, _data, _signature, toBytes(_passHash)),
+            "invalid dkim data"
+        );
+        passHash = _passHash;
+        emit AccountRecovered(_passHash);
     }
 }
