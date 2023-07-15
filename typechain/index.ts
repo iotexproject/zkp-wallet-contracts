@@ -58,6 +58,12 @@ export type { IERC777Recipient } from "./@openzeppelin/contracts/token/ERC777/IE
 export { IERC777Recipient__factory } from "./factories/@openzeppelin/contracts/token/ERC777/IERC777Recipient__factory";
 export type { IERC165 } from "./@openzeppelin/contracts/utils/introspection/IERC165";
 export { IERC165__factory } from "./factories/@openzeppelin/contracts/utils/introspection/IERC165__factory";
+export type { EmailGuardian } from "./src/EmailGuardian";
+export { EmailGuardian__factory } from "./factories/src/EmailGuardian__factory";
+export type { IDkimVerifier } from "./src/interfaces/IDkimVerifier";
+export { IDkimVerifier__factory } from "./factories/src/interfaces/IDkimVerifier__factory";
+export type { IEmailGuardian } from "./src/interfaces/IEmailGuardian";
+export { IEmailGuardian__factory } from "./factories/src/interfaces/IEmailGuardian__factory";
 export type { INameWrapper } from "./src/interfaces/INameWrapper";
 export { INameWrapper__factory } from "./factories/src/interfaces/INameWrapper__factory";
 export type { INS } from "./src/interfaces/INS";

@@ -10,6 +10,10 @@ contract EmailGuardian is IEmailGuardian {
 
     IDkimVerifier private _dkimVerifier;
 
+    constructor(IDkimVerifier verifier) {
+        _dkimVerifier = verifier;
+    }
+
     function validateDKIM(
         bytes32 server,
         bytes32 email,
