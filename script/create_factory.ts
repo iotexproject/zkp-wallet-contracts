@@ -7,7 +7,7 @@ import { prove } from './prover'
 async function main() {
     const name = "test"
     const password = process.env.PASSWORD
-    const nameHash = namehash(name + ".zkwallet.io")
+    const nameHash = namehash(name + ".zwallet.io")
 
     const passport = BigInt(keccak256(
         hexConcat([nameHash, hexlify(toUtf8Bytes(password!))])
@@ -20,7 +20,7 @@ async function main() {
 
     const factory = (await ethers.getContract('ZKPassAccountFactory')) as ZKPassAccountFactory
     
-    const tx = await factory.createAccount("test", publicSignals[0])
+    const tx = await factory.createAccount(name, publicSignals[0])
 }
 
 main()
