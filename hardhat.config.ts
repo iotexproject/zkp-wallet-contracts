@@ -33,7 +33,7 @@ const config: HardhatUserConfig = {
             saveDeployments: false,
         },
         dev: {
-            url: "http://localhost:8545",
+            url: "http://127.0.0.1:8545",
             chainId: 4690,
             accounts: real_accounts,
         },
