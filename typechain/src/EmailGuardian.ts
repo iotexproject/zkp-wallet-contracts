@@ -25,8 +25,8 @@ import type {
 export interface EmailGuardianInterface extends utils.Interface {
   functions: {
     "nullifierHashes(bytes32)": FunctionFragment;
-    "subjectHex(string,bytes)": FunctionFragment;
-    "validateDKIM(bytes32,bytes32,bytes,bytes,bytes)": FunctionFragment;
+    "subjectHex(string,address,bytes)": FunctionFragment;
+    "validateDKIM(bytes32,bytes32,address,bytes,bytes,bytes)": FunctionFragment;
   };
 
   getFunction(
@@ -39,13 +39,18 @@ export interface EmailGuardianInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "subjectHex",
-    values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<string>,
+      PromiseOrValue<BytesLike>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "validateDKIM",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
+      PromiseOrValue<string>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>
@@ -99,6 +104,7 @@ export interface EmailGuardian extends BaseContract {
 
     subjectHex(
       typ: PromiseOrValue<string>,
+      account: PromiseOrValue<string>,
       target: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[string]>;
@@ -106,6 +112,7 @@ export interface EmailGuardian extends BaseContract {
     validateDKIM(
       server: PromiseOrValue<BytesLike>,
       email: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
       target: PromiseOrValue<BytesLike>,
@@ -120,6 +127,7 @@ export interface EmailGuardian extends BaseContract {
 
   subjectHex(
     typ: PromiseOrValue<string>,
+    account: PromiseOrValue<string>,
     target: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<string>;
@@ -127,6 +135,7 @@ export interface EmailGuardian extends BaseContract {
   validateDKIM(
     server: PromiseOrValue<BytesLike>,
     email: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
     data: PromiseOrValue<BytesLike>,
     signature: PromiseOrValue<BytesLike>,
     target: PromiseOrValue<BytesLike>,
@@ -141,6 +150,7 @@ export interface EmailGuardian extends BaseContract {
 
     subjectHex(
       typ: PromiseOrValue<string>,
+      account: PromiseOrValue<string>,
       target: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
@@ -148,6 +158,7 @@ export interface EmailGuardian extends BaseContract {
     validateDKIM(
       server: PromiseOrValue<BytesLike>,
       email: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
       target: PromiseOrValue<BytesLike>,
@@ -165,6 +176,7 @@ export interface EmailGuardian extends BaseContract {
 
     subjectHex(
       typ: PromiseOrValue<string>,
+      account: PromiseOrValue<string>,
       target: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -172,6 +184,7 @@ export interface EmailGuardian extends BaseContract {
     validateDKIM(
       server: PromiseOrValue<BytesLike>,
       email: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
       target: PromiseOrValue<BytesLike>,
@@ -187,6 +200,7 @@ export interface EmailGuardian extends BaseContract {
 
     subjectHex(
       typ: PromiseOrValue<string>,
+      account: PromiseOrValue<string>,
       target: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -194,6 +208,7 @@ export interface EmailGuardian extends BaseContract {
     validateDKIM(
       server: PromiseOrValue<BytesLike>,
       email: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
       target: PromiseOrValue<BytesLike>,

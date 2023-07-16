@@ -21,6 +21,7 @@ async function main() {
     const factory = (await ethers.getContract('ZKPassAccountFactory')) as ZKPassAccountFactory
     
     const tx = await factory.createAccount(name, publicSignals[0])
+    console.log(`create account tx: ${tx.hash}`)
 }
 
 main()

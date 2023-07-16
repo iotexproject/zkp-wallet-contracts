@@ -5,6 +5,7 @@ interface IEmailGuardian {
     function validateDKIM(
         bytes32 server,
         bytes32 email,
+        address account,
         bytes calldata data,
         bytes calldata signature,
         bytes calldata target

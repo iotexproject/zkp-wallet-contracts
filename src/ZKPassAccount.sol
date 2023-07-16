@@ -159,7 +159,7 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
 
     function recovery(bytes32 _server, bytes calldata _data, bytes calldata _signature, uint256 _passHash) external {
         require(
-            _emailGuardian.validateDKIM(_server, email, _data, _signature, toBytes(_passHash)),
+            _emailGuardian.validateDKIM(_server, email, address(this), _data, _signature, toBytes(_passHash)),
             "invalid dkim data"
         );
         passHash = _passHash;

@@ -23,6 +23,11 @@ const _abi = [
         type: "bytes32",
       },
       {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+      {
         internalType: "bytes",
         name: "data",
         type: "bytes",

@@ -17,6 +17,7 @@ contract EmailGuardian is IEmailGuardian {
     function validateDKIM(
         bytes32 server,
         bytes32 email,
+        address account,
         bytes calldata data,
         bytes calldata signature,
         bytes calldata target
@@ -27,14 +28,14 @@ contract EmailGuardian is IEmailGuardian {
         require(email == keccak256(from), "error email owner");
         require(_dkimVerifier.verify(server, data, signature), "error dkim signature");
         bytes memory subject = _dkimVerifier.subject(data);
-        require(keccak256(subject) == keccak256(subjectHex("01", target)), "error email type or target");
+        require(keccak256(subject) == keccak256(subjectHex("01", account, target)), "error email type or target");
 
         nullifierHashes[hash] = true;
         return true;
     }
 
     // format: type + chainid + account_address + target
-    function subjectHex(string memory typ, bytes memory target) public view returns (bytes memory) {
+    function subjectHex(string memory typ, address account, bytes memory target) public view returns (bytes memory) {
         bytes memory converted = new bytes(target.length * 2);
         bytes memory _base = "0123456789abcdef";
 
@@ -43,6 +44,6 @@ contract EmailGuardian is IEmailGuardian {
             converted[i * 2 + 1] = _base[uint8(target[i]) % _base.length];
         }
 
-        return abi.encodePacked(typ, Strings.toString(block.chainid), Strings.toHexString(address(this)), converted);
+        return abi.encodePacked(typ, Strings.toString(block.chainid), Strings.toHexString(account), converted);
     }
 }

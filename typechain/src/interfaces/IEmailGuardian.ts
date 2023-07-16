@@ -24,7 +24,7 @@ import type {
 
 export interface IEmailGuardianInterface extends utils.Interface {
   functions: {
-    "validateDKIM(bytes32,bytes32,bytes,bytes,bytes)": FunctionFragment;
+    "validateDKIM(bytes32,bytes32,address,bytes,bytes,bytes)": FunctionFragment;
   };
 
   getFunction(nameOrSignatureOrTopic: "validateDKIM"): FunctionFragment;
@@ -34,6 +34,7 @@ export interface IEmailGuardianInterface extends utils.Interface {
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
+      PromiseOrValue<string>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>
@@ -78,6 +79,7 @@ export interface IEmailGuardian extends BaseContract {
     validateDKIM(
       server: PromiseOrValue<BytesLike>,
       email: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
       target: PromiseOrValue<BytesLike>,
@@ -88,6 +90,7 @@ export interface IEmailGuardian extends BaseContract {
   validateDKIM(
     server: PromiseOrValue<BytesLike>,
     email: PromiseOrValue<BytesLike>,
+    account: PromiseOrValue<string>,
     data: PromiseOrValue<BytesLike>,
     signature: PromiseOrValue<BytesLike>,
     target: PromiseOrValue<BytesLike>,
@@ -98,6 +101,7 @@ export interface IEmailGuardian extends BaseContract {
     validateDKIM(
       server: PromiseOrValue<BytesLike>,
       email: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
       target: PromiseOrValue<BytesLike>,
@@ -111,6 +115,7 @@ export interface IEmailGuardian extends BaseContract {
     validateDKIM(
       server: PromiseOrValue<BytesLike>,
       email: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
       target: PromiseOrValue<BytesLike>,
@@ -122,6 +127,7 @@ export interface IEmailGuardian extends BaseContract {
     validateDKIM(
       server: PromiseOrValue<BytesLike>,
       email: PromiseOrValue<BytesLike>,
+      account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
       target: PromiseOrValue<BytesLike>,
