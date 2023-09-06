@@ -17,17 +17,17 @@ async function main() {
 
     const name = "test"
     const password = process.env.PASSWORD
-    const nameHash = namehash(name + ".zwallet.io")
+    const nameHash = namehash(name + ".zkwallets.io")
 
     const resolverAddr = await registry.resolver(nameHash)
     if (resolverAddr === "0x0000000000000000000000000000000000000000") {
-        console.log(`Can't find resolver for ${name + ".zwallet.io"}`)
+        console.log(`Can't find resolver for ${name + ".zkwallets.io"}`)
         return
     }
     const resolver = (await ethers.getContractAt("IResolver", resolverAddr)) as IResolver
     const accountAddr = await resolver.addr(nameHash)
     if (accountAddr === "0x0000000000000000000000000000000000000000") {
-        console.log(`Can't resolve ${name + ".zwallet.io"} address`)
+        console.log(`Can't resolve ${name + ".zkwallets.io"} address`)
         return
     }
     const account = (await ethers.getContractAt("ZKPassAccount", accountAddr)) as ZKPassAccount

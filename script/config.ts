@@ -1,6 +1,6 @@
 const addresses = {
     "dev": {
-        entrypoint: '0x16653fF93F0e5fEF85CE46862562a4c58B05435E',
+        entrypoint: '0xc3527348De07d591c9d567ce1998eFA2031B8675',
         ins: "0x845d8ccb0D92174B33AC9A876B65c49Ca4676685",
         nameWrapper: '0x92f0926350268a0147E36c4Dfbc4c72Eb11696cF',
         resolver: '0x919f2508389c59fe6E896f80c2B70ff53877942B',
@@ -9,7 +9,7 @@ const addresses = {
         dkimVerifier: '0xf08e18e012ca32aaBD0a112ef6BB21381A9a2756'
     },
     "testnet": {
-        entrypoint: '0x16653fF93F0e5fEF85CE46862562a4c58B05435E',
+        entrypoint: '0xc3527348De07d591c9d567ce1998eFA2031B8675',
         ins: "0x845d8ccb0D92174B33AC9A876B65c49Ca4676685",
         nameWrapper: '0x92f0926350268a0147E36c4Dfbc4c72Eb11696cF',
         resolver: '0x919f2508389c59fe6E896f80c2B70ff53877942B',

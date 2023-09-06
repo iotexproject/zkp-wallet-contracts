@@ -1,4 +1,3 @@
-import { ethers } from 'hardhat'
 import { namehash } from 'ethers/lib/utils'
 import { DeployFunction } from 'hardhat-deploy/types'
 import { HardhatRuntimeEnvironment } from 'hardhat/types'
@@ -13,7 +12,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // @ts-ignore
     const addresses = config[network.name]
 
-    const baseName = '.zwallet.io'
+    const baseName = '.zkwallets.io'
     const baseNode = namehash(baseName.substring(1))
 
     const verifier = await deploy('Verifier', {

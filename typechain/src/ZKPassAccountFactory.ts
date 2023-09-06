@@ -9,6 +9,7 @@ import type {
   CallOverrides,
   ContractTransaction,
   Overrides,
+  PayableOverrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -33,6 +34,7 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
     "baseName()": FunctionFragment;
     "baseNode()": FunctionFragment;
     "createAccount(string,uint256)": FunctionFragment;
+    "execute(address,uint256,bytes)": FunctionFragment;
     "getAddress(string,uint256)": FunctionFragment;
     "nameWrapper()": FunctionFragment;
     "onERC1155Received(address,address,uint256,uint256,bytes)": FunctionFragment;
@@ -49,6 +51,7 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
       | "baseName"
       | "baseNode"
       | "createAccount"
+      | "execute"
       | "getAddress"
       | "nameWrapper"
       | "onERC1155Received"
@@ -68,6 +71,14 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "createAccount",
     values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "execute",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "getAddress",
@@ -112,6 +123,7 @@ export interface ZKPassAccountFactoryInterface extends utils.Interface {
     functionFragment: "createAccount",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "execute", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getAddress", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "nameWrapper",
@@ -194,6 +206,13 @@ export interface ZKPassAccountFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    execute(
+      target: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     getAddress(
       label: PromiseOrValue<string>,
       passHash: PromiseOrValue<BigNumberish>,
@@ -237,6 +256,13 @@ export interface ZKPassAccountFactory extends BaseContract {
     label: PromiseOrValue<string>,
     passHash: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  execute(
+    target: PromiseOrValue<string>,
+    value: PromiseOrValue<BigNumberish>,
+    data: PromiseOrValue<BytesLike>,
+    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   getAddress(
@@ -283,6 +309,13 @@ export interface ZKPassAccountFactory extends BaseContract {
       passHash: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    execute(
+      target: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     getAddress(
       label: PromiseOrValue<string>,
@@ -339,6 +372,13 @@ export interface ZKPassAccountFactory extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    execute(
+      target: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     getAddress(
       label: PromiseOrValue<string>,
       passHash: PromiseOrValue<BigNumberish>,
@@ -385,6 +425,13 @@ export interface ZKPassAccountFactory extends BaseContract {
       label: PromiseOrValue<string>,
       passHash: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    execute(
+      target: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
+      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     getAddress(

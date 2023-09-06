@@ -90,4 +90,13 @@ contract ZKPassAccountFactory is Ownable {
     function onERC1155Received(address, address, uint256, uint256, bytes calldata) external pure returns (bytes4) {
         return IERC1155Receiver.onERC1155Received.selector;
     }
+
+    function execute(address target, uint256 value, bytes memory data) external payable onlyOwner {
+        (bool success, bytes memory result) = target.call{value: value}(data);
+        if (!success) {
+            assembly {
+                revert(add(result, 32), mload(result))
+            }
+        }
+    }
 }
