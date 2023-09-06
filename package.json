@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@account-abstraction/contracts": "^0.6.0",
-    "@openzeppelin/contracts": "^4.8.3"
+    "@openzeppelin/contracts": "^4.8.3",
+    "userop": "^0.3.3"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",

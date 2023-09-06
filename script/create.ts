@@ -1,75 +1,43 @@
 import { ethers } from "hardhat"
-import { hexConcat, hexlify, keccak256, namehash, resolveProperties, toUtf8Bytes } from "ethers/lib/utils"
 
 import { ZKPassAccountFactory } from "../typechain"
 import { EntryPoint } from "@account-abstraction/contracts"
 import { fillUserOp, signOp } from "./utils"
 import config from './config'
-import { ZKPSigner } from "./signer"
-import { prove } from "./prover"
+import { ZKPAccount, ZKPSigner } from "./userop"
+import { Client, Presets } from "userop"
 
 async function main() {
     // @ts-ignore
     const addresses = config[network.name]
 
-    const factory = (await ethers.getContract("ZKPassAccountFactory")) as ZKPassAccountFactory
+    const rpc = "https://babel-api.testnet.iotex.io"
+    const bundlerRpc = "https://bundler.testnet.w3bstream.com"
     const entryPoint = (await ethers.getContractAt("EntryPoint", addresses.entrypoint)) as EntryPoint
-    const bundler = new ethers.Wallet(process.env.BUNDLER!, ethers.provider)
-    console.log(`bundler address: ${bundler.address}`)
 
-    const name = "test"
+    const name = "test1"
     const password = process.env.PASSWORD
-    const nameHash = namehash(name + ".test002.io")
-    const passport = BigInt(keccak256(
-        hexConcat([nameHash, hexlify(toUtf8Bytes(password!))])
-    ))
-    const {publicSignals} = await prove(
-        BigInt(0), // nonce
-        BigInt(0), // opHash
-        passport
-    )
-    const account = await factory.getAddress(name, publicSignals[0])
+    const signer = new ZKPSigner(name, password!, 0)
 
-    const initCode = hexConcat([
-        factory.address,
-        factory.interface.encodeFunctionData("createAccount", [name, publicSignals[0]]),
-    ])
-    const createOp = {
-        sender: account,
-        initCode: initCode,
-    }
+    const client = await Client.init(rpc, {
+        entryPoint: entryPoint.address,
+        overrideBundlerRpc: bundlerRpc,
+    })
+    const accountBuilder = await ZKPAccount.init(signer, rpc, {
+        overrideBundlerRpc: bundlerRpc,
+        entryPoint: entryPoint.address,
+        paymasterMiddleware: Presets.Middleware.verifyingPaymaster(
+            // paymaster rpc
+            `https://paymaster.testnet.w3bstream.com/rpc/${process.env.API_KEY}`,
+            ""
+        ),
+    })
 
-    const fullCreateOp = await fillUserOp(createOp, entryPoint)
-
-    const stake = await entryPoint.balanceOf(account)
-    if (stake.isZero()) {
-        console.log(`deposit gas for account ${account}`)
-        const tx = await entryPoint
-            .connect(bundler)
-            .depositTo(account, { value: ethers.utils.parseEther("10") })
-        await tx.wait()
-    }
-
-    const chainId = (await ethers.provider.getNetwork()).chainId
-    const signedOp = await signOp(
-        fullCreateOp,
-        entryPoint.address,
-        chainId,
-        new ZKPSigner(nameHash, password!, 0)
-    )
-
-    const err = await entryPoint.callStatic.simulateValidation(signedOp).catch((e) => e)
-    if (err.errorName === "FailedOp") {
-        console.error(`simulate op error ${err.errorArgs.at(-1)}`)
-        return
-    } else if (err.errorName !== "ValidationResult") {
-        console.error(`unknow error ${err}`)
-        return
-    }
-    console.log(`simulate op success`)
-
-    const tx = await entryPoint.connect(bundler).handleOps([signedOp], bundler.address)
-    console.log(`create account tx: ${tx.hash}, account: ${account}`)
+    const account = accountBuilder.getSender()
+    const response = await client.sendUserOperation(accountBuilder)
+    console.log(`Create ${account} ophash: ${response.userOpHash}`)
+    const userOperationEvent = await response.wait()
+    console.log(`Create ${account} txhash: ${userOperationEvent?.transactionHash}`)
 }
 
 main()
