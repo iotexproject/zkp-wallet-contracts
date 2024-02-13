@@ -14,6 +14,8 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
     event EmailGuardianAdded(bytes32 indexed email);
     event PasswordChanged(uint256 indexed passHash);
     event AccountRecovered(uint256 indexed passHash);
+    event AccountPendingRecovey(uint256 timestamp, bytes target);
+    event AccountRecoveryStopped();
 
     uint256 immutable SNARK_SCALAR_FIELD =
         21888242871839275222246405745257275088548364400416034343698204186575808495617;
@@ -22,6 +24,12 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
     IVerifier private immutable _verifier;
     IEmailGuardian private immutable _emailGuardian;
 
+    struct RecoveryData {
+        uint256 timestamp;
+        bytes target;
+    }
+
+    RecoveryData public pendingTarget;
     // owner only for register INS name
     address public owner;
     bytes32 public nameHash;
@@ -157,12 +165,34 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
         }
     }
 
-    function recovery(bytes32 _server, bytes calldata _data, bytes calldata _signature, uint256 _passHash) external {
+    function pendingRecovery(
+        bytes32 _server,
+        bytes calldata _data,
+        bytes calldata _signature,
+        bytes calldata _target
+    ) external {
+        require(_emailGuardian.verify(_server, address(this), _data, _signature, _target), "invalid dkim data");
+
+        pendingTarget = RecoveryData({timestamp: block.timestamp, target: _target});
+        emit AccountPendingRecovey(block.timestamp, _target);
+    }
+
+    function stopRecovery() external {
+        require(address(this) == msg.sender, "only owner");
+        require(pendingTarget.timestamp > 0, "no recovery");
+
+        pendingTarget.timestamp = 0;
+        emit AccountRecoveryStopped();
+    }
+
+    function recovery() external {
         require(
-            _emailGuardian.validateDKIM(_server, email, address(this), _data, _signature, toBytes(_passHash)),
-            "invalid dkim data"
+            pendingTarget.timestamp > 0 && pendingTarget.timestamp + 86400 < block.timestamp,
+            "invalid recovery time"
         );
-        passHash = _passHash;
-        emit AccountRecovered(_passHash);
+        passHash = uint256(bytes32(pendingTarget.target));
+        pendingTarget.timestamp = 0;
+
+        emit AccountRecovered(passHash);
     }
 }

@@ -21,18 +21,18 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
         log: true
     })
 
-    const emailGuardian = await deploy('EmailGuardian', {
-        from: deployer,
-        args: [addresses.dkimVerifier],
-        log: true
-    })
+    // const emailGuardian = await deploy('EmailGuardian', {
+    //     from: deployer,
+    //     args: [addresses.dkimVerifier],
+    //     log: true
+    // })
 
     await deploy('ZKPassAccountFactory', {
         from: deployer,
         args: [
             addresses.entrypoint,
             verifier.address,
-            emailGuardian.address,
+            addresses.emailGuardian,
             addresses.nameWrapper,
             addresses.resolver,
             addresses.reverseRegistrar,
