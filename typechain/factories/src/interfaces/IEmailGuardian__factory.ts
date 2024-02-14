@@ -14,12 +14,57 @@ const _abi = [
     inputs: [
       {
         internalType: "bytes32",
-        name: "server",
+        name: "email",
         type: "bytes32",
       },
       {
+        internalType: "bytes",
+        name: "signature",
+        type: "bytes",
+      },
+    ],
+    name: "bind",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_account",
+        type: "address",
+      },
+    ],
+    name: "emails",
+    outputs: [
+      {
+        internalType: "bytes32",
+        name: "",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "unbind",
+    outputs: [
+      {
         internalType: "bytes32",
         name: "email",
+        type: "bytes32",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "server",
         type: "bytes32",
       },
       {
@@ -43,7 +88,7 @@ const _abi = [
         type: "bytes",
       },
     ],
-    name: "validateDKIM",
+    name: "verify",
     outputs: [
       {
         internalType: "bool",

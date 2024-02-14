@@ -24,15 +24,28 @@ import type {
 
 export interface IEmailGuardianInterface extends utils.Interface {
   functions: {
-    "validateDKIM(bytes32,bytes32,address,bytes,bytes,bytes)": FunctionFragment;
+    "bind(bytes32,bytes)": FunctionFragment;
+    "emails(address)": FunctionFragment;
+    "unbind()": FunctionFragment;
+    "verify(bytes32,address,bytes,bytes,bytes)": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "validateDKIM"): FunctionFragment;
+  getFunction(
+    nameOrSignatureOrTopic: "bind" | "emails" | "unbind" | "verify"
+  ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "validateDKIM",
+    functionFragment: "bind",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "emails",
+    values: [PromiseOrValue<string>]
+  ): string;
+  encodeFunctionData(functionFragment: "unbind", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "verify",
     values: [
-      PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<string>,
       PromiseOrValue<BytesLike>,
@@ -41,10 +54,10 @@ export interface IEmailGuardianInterface extends utils.Interface {
     ]
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "validateDKIM",
-    data: BytesLike
-  ): Result;
+  decodeFunctionResult(functionFragment: "bind", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "emails", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "unbind", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "verify", data: BytesLike): Result;
 
   events: {};
 }
@@ -76,9 +89,23 @@ export interface IEmailGuardian extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    validateDKIM(
-      server: PromiseOrValue<BytesLike>,
+    bind(
       email: PromiseOrValue<BytesLike>,
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    emails(
+      _account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<[string]>;
+
+    unbind(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    verify(
+      server: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
@@ -87,9 +114,23 @@ export interface IEmailGuardian extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
-  validateDKIM(
-    server: PromiseOrValue<BytesLike>,
+  bind(
     email: PromiseOrValue<BytesLike>,
+    signature: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  emails(
+    _account: PromiseOrValue<string>,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
+  unbind(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  verify(
+    server: PromiseOrValue<BytesLike>,
     account: PromiseOrValue<string>,
     data: PromiseOrValue<BytesLike>,
     signature: PromiseOrValue<BytesLike>,
@@ -98,9 +139,21 @@ export interface IEmailGuardian extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    validateDKIM(
-      server: PromiseOrValue<BytesLike>,
+    bind(
       email: PromiseOrValue<BytesLike>,
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    emails(
+      _account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
+    unbind(overrides?: CallOverrides): Promise<string>;
+
+    verify(
+      server: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
@@ -112,9 +165,23 @@ export interface IEmailGuardian extends BaseContract {
   filters: {};
 
   estimateGas: {
-    validateDKIM(
-      server: PromiseOrValue<BytesLike>,
+    bind(
       email: PromiseOrValue<BytesLike>,
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    emails(
+      _account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    unbind(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    verify(
+      server: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,
@@ -124,9 +191,23 @@ export interface IEmailGuardian extends BaseContract {
   };
 
   populateTransaction: {
-    validateDKIM(
-      server: PromiseOrValue<BytesLike>,
+    bind(
       email: PromiseOrValue<BytesLike>,
+      signature: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    emails(
+      _account: PromiseOrValue<string>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    unbind(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    verify(
+      server: PromiseOrValue<BytesLike>,
       account: PromiseOrValue<string>,
       data: PromiseOrValue<BytesLike>,
       signature: PromiseOrValue<BytesLike>,

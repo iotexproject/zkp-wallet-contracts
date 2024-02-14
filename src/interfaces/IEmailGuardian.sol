@@ -9,4 +9,10 @@ interface IEmailGuardian {
         bytes calldata signature,
         bytes calldata target
     ) external returns (bool);
+
+    function bind(bytes32 email, bytes calldata signature) external;
+
+    function unbind() external returns (bytes32 email);
+
+    function emails(address _account) external view returns (bytes32);
 }

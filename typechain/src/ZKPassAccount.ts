@@ -71,7 +71,7 @@ export type UserOperationStructOutput = [
 export interface ZKPassAccountInterface extends utils.Interface {
   functions: {
     "addDeposit()": FunctionFragment;
-    "addEmailGuardian(bytes32)": FunctionFragment;
+    "addEmailGuardian(bytes32,bytes)": FunctionFragment;
     "changePassword(uint256)": FunctionFragment;
     "email()": FunctionFragment;
     "entryPoint()": FunctionFragment;
@@ -86,10 +86,13 @@ export interface ZKPassAccountInterface extends utils.Interface {
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
     "owner()": FunctionFragment;
     "passHash()": FunctionFragment;
+    "pendingRecovery(bytes32,bytes,bytes,bytes)": FunctionFragment;
+    "pendingTarget()": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
-    "recovery(bytes32,bytes,bytes,uint256)": FunctionFragment;
+    "recovery()": FunctionFragment;
+    "removeEmailGuardian()": FunctionFragment;
+    "stopRecovery()": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
-    "toBytes(uint256)": FunctionFragment;
     "tokensReceived(address,address,address,uint256,bytes,bytes)": FunctionFragment;
     "upgradeTo(address)": FunctionFragment;
     "upgradeToAndCall(address,bytes)": FunctionFragment;
@@ -117,10 +120,13 @@ export interface ZKPassAccountInterface extends utils.Interface {
       | "onERC721Received"
       | "owner"
       | "passHash"
+      | "pendingRecovery"
+      | "pendingTarget"
       | "proxiableUUID"
       | "recovery"
+      | "removeEmailGuardian"
+      | "stopRecovery"
       | "supportsInterface"
-      | "toBytes"
       | "tokensReceived"
       | "upgradeTo"
       | "upgradeToAndCall"
@@ -136,7 +142,7 @@ export interface ZKPassAccountInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "addEmailGuardian",
-    values: [PromiseOrValue<BytesLike>]
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(
     functionFragment: "changePassword",
@@ -205,25 +211,34 @@ export interface ZKPassAccountInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "passHash", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "proxiableUUID",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "recovery",
+    functionFragment: "pendingRecovery",
     values: [
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
-      PromiseOrValue<BigNumberish>
+      PromiseOrValue<BytesLike>
     ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pendingTarget",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "proxiableUUID",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "recovery", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "removeEmailGuardian",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "stopRecovery",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "toBytes",
-    values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
     functionFragment: "tokensReceived",
@@ -297,15 +312,30 @@ export interface ZKPassAccountInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "passHash", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "pendingRecovery",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "pendingTarget",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "proxiableUUID",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "recovery", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "removeEmailGuardian",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "stopRecovery",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "supportsInterface",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "toBytes", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "tokensReceived",
     data: BytesLike
@@ -330,25 +360,43 @@ export interface ZKPassAccountInterface extends utils.Interface {
   ): Result;
 
   events: {
+    "AccountPendingRecovey(uint256,bytes)": EventFragment;
     "AccountRecovered(uint256)": EventFragment;
+    "AccountRecoveryStopped()": EventFragment;
     "AdminChanged(address,address)": EventFragment;
     "BeaconUpgraded(address)": EventFragment;
     "EmailGuardianAdded(bytes32)": EventFragment;
+    "EmailGuardianRemoved()": EventFragment;
     "Initialized(uint8)": EventFragment;
     "PasswordChanged(uint256)": EventFragment;
     "Upgraded(address)": EventFragment;
     "ZKPassAccountInitialized(address,bytes32,uint256)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "AccountPendingRecovey"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AccountRecovered"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "AccountRecoveryStopped"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "AdminChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "BeaconUpgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "EmailGuardianAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "EmailGuardianRemoved"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Initialized"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "PasswordChanged"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ZKPassAccountInitialized"): EventFragment;
 }
+
+export interface AccountPendingRecoveyEventObject {
+  timestamp: BigNumber;
+  target: string;
+}
+export type AccountPendingRecoveyEvent = TypedEvent<
+  [BigNumber, string],
+  AccountPendingRecoveyEventObject
+>;
+
+export type AccountPendingRecoveyEventFilter =
+  TypedEventFilter<AccountPendingRecoveyEvent>;
 
 export interface AccountRecoveredEventObject {
   passHash: BigNumber;
@@ -360,6 +408,15 @@ export type AccountRecoveredEvent = TypedEvent<
 
 export type AccountRecoveredEventFilter =
   TypedEventFilter<AccountRecoveredEvent>;
+
+export interface AccountRecoveryStoppedEventObject {}
+export type AccountRecoveryStoppedEvent = TypedEvent<
+  [],
+  AccountRecoveryStoppedEventObject
+>;
+
+export type AccountRecoveryStoppedEventFilter =
+  TypedEventFilter<AccountRecoveryStoppedEvent>;
 
 export interface AdminChangedEventObject {
   previousAdmin: string;
@@ -392,6 +449,15 @@ export type EmailGuardianAddedEvent = TypedEvent<
 
 export type EmailGuardianAddedEventFilter =
   TypedEventFilter<EmailGuardianAddedEvent>;
+
+export interface EmailGuardianRemovedEventObject {}
+export type EmailGuardianRemovedEvent = TypedEvent<
+  [],
+  EmailGuardianRemovedEventObject
+>;
+
+export type EmailGuardianRemovedEventFilter =
+  TypedEventFilter<EmailGuardianRemovedEvent>;
 
 export interface InitializedEventObject {
   version: number;
@@ -463,6 +529,7 @@ export interface ZKPassAccount extends BaseContract {
 
     addEmailGuardian(
       _email: PromiseOrValue<BytesLike>,
+      _signature: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -531,13 +598,29 @@ export interface ZKPassAccount extends BaseContract {
 
     passHash(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
-
-    recovery(
+    pendingRecovery(
       _server: PromiseOrValue<BytesLike>,
       _data: PromiseOrValue<BytesLike>,
       _signature: PromiseOrValue<BytesLike>,
-      _passHash: PromiseOrValue<BigNumberish>,
+      _target: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    pendingTarget(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, string] & { timestamp: BigNumber; target: string }>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<[string]>;
+
+    recovery(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    removeEmailGuardian(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    stopRecovery(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -545,11 +628,6 @@ export interface ZKPassAccount extends BaseContract {
       interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
-
-    toBytes(
-      x: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[string] & { b: string }>;
 
     tokensReceived(
       arg0: PromiseOrValue<string>,
@@ -600,6 +678,7 @@ export interface ZKPassAccount extends BaseContract {
 
   addEmailGuardian(
     _email: PromiseOrValue<BytesLike>,
+    _signature: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -668,13 +747,29 @@ export interface ZKPassAccount extends BaseContract {
 
   passHash(overrides?: CallOverrides): Promise<BigNumber>;
 
-  proxiableUUID(overrides?: CallOverrides): Promise<string>;
-
-  recovery(
+  pendingRecovery(
     _server: PromiseOrValue<BytesLike>,
     _data: PromiseOrValue<BytesLike>,
     _signature: PromiseOrValue<BytesLike>,
-    _passHash: PromiseOrValue<BigNumberish>,
+    _target: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  pendingTarget(
+    overrides?: CallOverrides
+  ): Promise<[BigNumber, string] & { timestamp: BigNumber; target: string }>;
+
+  proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
+  recovery(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  removeEmailGuardian(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  stopRecovery(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -682,11 +777,6 @@ export interface ZKPassAccount extends BaseContract {
     interfaceId: PromiseOrValue<BytesLike>,
     overrides?: CallOverrides
   ): Promise<boolean>;
-
-  toBytes(
-    x: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<string>;
 
   tokensReceived(
     arg0: PromiseOrValue<string>,
@@ -735,6 +825,7 @@ export interface ZKPassAccount extends BaseContract {
 
     addEmailGuardian(
       _email: PromiseOrValue<BytesLike>,
+      _signature: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -803,25 +894,30 @@ export interface ZKPassAccount extends BaseContract {
 
     passHash(overrides?: CallOverrides): Promise<BigNumber>;
 
-    proxiableUUID(overrides?: CallOverrides): Promise<string>;
-
-    recovery(
+    pendingRecovery(
       _server: PromiseOrValue<BytesLike>,
       _data: PromiseOrValue<BytesLike>,
       _signature: PromiseOrValue<BytesLike>,
-      _passHash: PromiseOrValue<BigNumberish>,
+      _target: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    pendingTarget(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber, string] & { timestamp: BigNumber; target: string }>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<string>;
+
+    recovery(overrides?: CallOverrides): Promise<void>;
+
+    removeEmailGuardian(overrides?: CallOverrides): Promise<void>;
+
+    stopRecovery(overrides?: CallOverrides): Promise<void>;
 
     supportsInterface(
       interfaceId: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<boolean>;
-
-    toBytes(
-      x: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<string>;
 
     tokensReceived(
       arg0: PromiseOrValue<string>,
@@ -867,12 +963,24 @@ export interface ZKPassAccount extends BaseContract {
   };
 
   filters: {
+    "AccountPendingRecovey(uint256,bytes)"(
+      timestamp?: null,
+      target?: null
+    ): AccountPendingRecoveyEventFilter;
+    AccountPendingRecovey(
+      timestamp?: null,
+      target?: null
+    ): AccountPendingRecoveyEventFilter;
+
     "AccountRecovered(uint256)"(
       passHash?: PromiseOrValue<BigNumberish> | null
     ): AccountRecoveredEventFilter;
     AccountRecovered(
       passHash?: PromiseOrValue<BigNumberish> | null
     ): AccountRecoveredEventFilter;
+
+    "AccountRecoveryStopped()"(): AccountRecoveryStoppedEventFilter;
+    AccountRecoveryStopped(): AccountRecoveryStoppedEventFilter;
 
     "AdminChanged(address,address)"(
       previousAdmin?: null,
@@ -896,6 +1004,9 @@ export interface ZKPassAccount extends BaseContract {
     EmailGuardianAdded(
       email?: PromiseOrValue<BytesLike> | null
     ): EmailGuardianAddedEventFilter;
+
+    "EmailGuardianRemoved()"(): EmailGuardianRemovedEventFilter;
+    EmailGuardianRemoved(): EmailGuardianRemovedEventFilter;
 
     "Initialized(uint8)"(version?: null): InitializedEventFilter;
     Initialized(version?: null): InitializedEventFilter;
@@ -933,6 +1044,7 @@ export interface ZKPassAccount extends BaseContract {
 
     addEmailGuardian(
       _email: PromiseOrValue<BytesLike>,
+      _signature: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1001,23 +1113,32 @@ export interface ZKPassAccount extends BaseContract {
 
     passHash(overrides?: CallOverrides): Promise<BigNumber>;
 
-    proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
-
-    recovery(
+    pendingRecovery(
       _server: PromiseOrValue<BytesLike>,
       _data: PromiseOrValue<BytesLike>,
       _signature: PromiseOrValue<BytesLike>,
-      _passHash: PromiseOrValue<BigNumberish>,
+      _target: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    pendingTarget(overrides?: CallOverrides): Promise<BigNumber>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<BigNumber>;
+
+    recovery(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    removeEmailGuardian(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    stopRecovery(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     supportsInterface(
       interfaceId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    toBytes(
-      x: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -1071,6 +1192,7 @@ export interface ZKPassAccount extends BaseContract {
 
     addEmailGuardian(
       _email: PromiseOrValue<BytesLike>,
+      _signature: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1139,23 +1261,32 @@ export interface ZKPassAccount extends BaseContract {
 
     passHash(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    recovery(
+    pendingRecovery(
       _server: PromiseOrValue<BytesLike>,
       _data: PromiseOrValue<BytesLike>,
       _signature: PromiseOrValue<BytesLike>,
-      _passHash: PromiseOrValue<BigNumberish>,
+      _target: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    pendingTarget(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    proxiableUUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    recovery(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeEmailGuardian(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    stopRecovery(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     supportsInterface(
       interfaceId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    toBytes(
-      x: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

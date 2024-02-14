@@ -17,7 +17,7 @@ async function main() {
     const factory = await ethers.getContract('ZKPassAccountFactory')
     const owner = factory.address
 
-    const label = 'zwallet'
+    const label = 't2wallet'
     const name = label + '.io'
     const node = namehash(name)
     const secret = '0x' + keccak256('secret')

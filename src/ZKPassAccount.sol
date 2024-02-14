@@ -12,6 +12,7 @@ import "./interfaces/IVerifier.sol";
 contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, Initializable {
     event ZKPassAccountInitialized(IEntryPoint indexed entryPoint, bytes32 indexed namaHash, uint256 indexed passHash);
     event EmailGuardianAdded(bytes32 indexed email);
+    event EmailGuardianRemoved();
     event PasswordChanged(uint256 indexed passHash);
     event AccountRecovered(uint256 indexed passHash);
     event AccountPendingRecovey(uint256 timestamp, bytes target);
@@ -34,9 +35,6 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
     address public owner;
     bytes32 public nameHash;
     uint256 public passHash;
-
-    // email hash for recovery
-    bytes32 public email;
 
     // solhint-disable-next-line no-empty-blocks
     receive() external payable {}
@@ -152,17 +150,20 @@ contract ZKPassAccount is BaseAccount, TokenCallbackHandler, UUPSUpgradeable, In
         return _verifier.verifyProof(a, b, c, input);
     }
 
-    function addEmailGuardian(bytes32 _email) external {
+    function addEmailGuardian(bytes32 _email, bytes memory _signature) external {
         require(address(this) == msg.sender, "only owner");
-        email = _email;
+        _emailGuardian.bind(_email, _signature);
         emit EmailGuardianAdded(_email);
     }
 
-    function toBytes(uint256 x) public pure returns (bytes memory b) {
-        b = new bytes(32);
-        assembly {
-            mstore(add(b, 32), x)
-        }
+    function removeEmailGuardian() external {
+        require(address(this) == msg.sender, "only owner");
+        _emailGuardian.unbind();
+        emit EmailGuardianRemoved();
+    }
+
+    function email() external view returns (bytes32) {
+        return _emailGuardian.emails(address(this));
     }
 
     function pendingRecovery(

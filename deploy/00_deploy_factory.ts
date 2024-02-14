@@ -12,7 +12,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     // @ts-ignore
     const addresses = config[network.name]
 
-    const baseName = '.zkwallets.io'
+    const baseName = '.t2wallet.io'
     const baseNode = namehash(baseName.substring(1))
 
     const verifier = await deploy('Verifier', {
